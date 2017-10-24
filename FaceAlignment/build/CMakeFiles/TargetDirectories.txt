@@ -1,0 +1,4 @@
+/home/xinruiming/Project/Facedetect/ANN_FACE/CoreFaceDAI/FaceAlignment/build/CMakeFiles/edit_cache.dir
+/home/xinruiming/Project/Facedetect/ANN_FACE/CoreFaceDAI/FaceAlignment/build/CMakeFiles/rebuild_cache.dir
+/home/xinruiming/Project/Facedetect/ANN_FACE/CoreFaceDAI/FaceAlignment/build/CMakeFiles/fa_test.dir
+/home/xinruiming/Project/Facedetect/ANN_FACE/CoreFaceDAI/FaceAlignment/build/CMakeFiles/facea_lib.dir
