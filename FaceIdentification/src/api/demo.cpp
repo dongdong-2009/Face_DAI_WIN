@@ -2,7 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+//only windows
 //#include <conio.h>
+#include <unistd.h>
 
 #include "opencv2/core/version.hpp"
 #include "opencv/cv.h"

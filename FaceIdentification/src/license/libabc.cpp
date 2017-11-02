@@ -130,15 +130,27 @@ int Get_GUID_For_Device(char * GUID) {
 	return guid_len;
 }
 
-int Check_Device_Register_State()
+int Check_Device_Register_State(char* path)
 {	
 	int Ret=-1;
-	if(access(".Key",0)<0)
+
+    string key_path;
+    if(path!=NULL)
+    {
+        key_path=path;
+        key_path+=".Key"; 
+    }
+    else
+    {
+         key_path=".Key";       
+    } 
+
+	if(access(key_path.c_str(),0)<0)
 	    return Ret;
 
 	FILE *file_stream = NULL;
 	char *pInfo = NULL;
-	file_stream = fopen(".Key", "r+");
+	file_stream = fopen(key_path.c_str(), "r+");
 	if(NULL == file_stream)
 		return Ret;
 	
@@ -195,10 +207,22 @@ int Check_Device_Register_State()
 	
 }
 
-int Register_For_Device(char * license)
+int Register_For_Device(char* path,char * license)
 {
 	FILE *file_stream = NULL;
-        file_stream = fopen(".Key", "w+");
+
+    string key_path;
+    if(path!=NULL)
+    {
+        key_path=path;
+        key_path+=".Key"; 
+    }
+    else
+    {
+         key_path=".Key";       
+    } 
+
+        file_stream = fopen(key_path.c_str(), "w+");
         if(NULL == file_stream)
             return -1;
 	//chmod(".Key", S_IRWXO);

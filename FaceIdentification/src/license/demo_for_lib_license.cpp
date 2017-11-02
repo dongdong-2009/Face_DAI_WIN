@@ -15,7 +15,7 @@ using namespace std;
 int main( int argc, char **argv )
 {
     int len=20;	
-    char *inBuffer=(char *)malloc(len+1); //输入缓冲区
+    char *inBuffer=(char *)malloc(len+1); 
     int num=Get_GUID_For_Device(inBuffer);	
     cout<<"GUID for this device is: "<<inBuffer<<"   GUID num is: "<<num<<endl;
 
@@ -27,7 +27,7 @@ int main( int argc, char **argv )
 	char * temp=argv[1]; 
 	if(strlen(temp)==60)
 	{
-	    Register_For_Device(temp);
+	    Register_For_Device(NULL,temp);
 	}
 	else
 	{
@@ -35,7 +35,7 @@ int main( int argc, char **argv )
 	    return -1;
 	}	
     }
-    if(0 == Check_Device_Register_State())
+    if(0 == Check_Device_Register_State(NULL))
     	cout<<"This device had allready registered"<<endl;
     else
 	cout<<"This device did not register,Please contact us"<<endl;
