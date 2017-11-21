@@ -89,20 +89,28 @@ int Face_Rec_Init(int ChannelNum,char *path)
     string sp_path;
     string net_path;
     string detector_path;  
+    
+/*
+    int res = Check_Device_Register_State();
+
+    if(res == -1 ) {
+        return -4;
+    }
+*/
 
     if(path!=NULL)
     {
         sp_path=path;
         net_path=path;
-	detector_path=path;
+        detector_path=path;
         sp_path+="fl.dat";
         net_path+="fr_model.dat";
-	detector_path+="fd.bin";
+        detector_path+="fd.bin";
     }
     else
     {
         sp_path+="fl.dat";
-	detector_path="fd.bin";
+        detector_path="fd.bin";
         net_path+="fr_model.dat";     
     } 
 
@@ -196,7 +204,7 @@ int Face_Rec_Extract(int ChannelID,Mat img_data_color,Mat img_data_gray,float* i
 
     if (faces.size()<1) {
         cout<<"Did not detect face"<< endl;
-	return -3;
+        return -3;
     } else {
 
     // This call asks the DNN to convert each face image in faces into a 128D vector.
@@ -204,10 +212,10 @@ int Face_Rec_Extract(int ChannelID,Mat img_data_color,Mat img_data_gray,float* i
     // but vectors from different people will be far apart.  So we can use these vectors to
     // identify if a pair of images are from the same person or from different people.  
         std::vector<matrix<float,0,1>> face_descriptors = net(faces);
-	for(int i=0;i<face_descriptors[0].size();i++)
-	{
-	    *(img_fea+i)=(float)face_descriptors[0](i,0);  //128*1
-	}
+    	for(int i=0;i<face_descriptors[0].size();i++)
+    	{
+    	    *(img_fea+i)=(float)face_descriptors[0](i,0);  //128*1
+    	}
     }
     return ret;
 }
@@ -243,25 +251,27 @@ int Face_Rec_Detect(int ChannelID,Mat img_data_color,Mat img_data_gray,std::vect
 
     std::vector<seeta::FaceInfo> gallery_faces;
     gallery_faces = Seeta_detector->Detect(gallery_data_gray);
-    int32_t gallery_face_num = static_cast<int32_t>(gallery_faces.size());		
+    int32_t gallery_face_num = static_cast<int32_t>(gallery_faces.size());	
+
     if(gallery_face_num ==0)
-	return -3;
+	   return -3;
+
     for(int i=0;i<gallery_face_num;i++)
     {
-	seeta::FaceInfo finalface;
-	finalface.bbox.x=(int)(gallery_faces[i].bbox.x-gallery_faces[i].bbox.width/10);
-	finalface.bbox.y=(int)(gallery_faces[i].bbox.y-gallery_faces[i].bbox.height/5);
-	finalface.bbox.width=(int)(gallery_faces[i].bbox.width+gallery_faces[i].bbox.width/5);
-	finalface.bbox.height=(int)(gallery_faces[i].bbox.height+gallery_faces[i].bbox.height/2.5);
-	if(finalface.bbox.x<0)
-	    finalface.bbox.x=0;	
-	if(finalface.bbox.y<0)
-	    finalface.bbox.y=0;
-	if(finalface.bbox.width>(gallery_data_gray.width-finalface.bbox.x))
-	    finalface.bbox.width=(gallery_data_gray.width-finalface.bbox.x);
-	if(finalface.bbox.height>(gallery_data_gray.height-finalface.bbox.y))
-	    finalface.bbox.height=(gallery_data_gray.height-finalface.bbox.y);
-	res_faces.push_back(finalface);
+    	seeta::FaceInfo finalface;
+    	finalface.bbox.x=(int)(gallery_faces[i].bbox.x-gallery_faces[i].bbox.width/10);
+    	finalface.bbox.y=(int)(gallery_faces[i].bbox.y-gallery_faces[i].bbox.height/5);
+    	finalface.bbox.width=(int)(gallery_faces[i].bbox.width+gallery_faces[i].bbox.width/5);
+    	finalface.bbox.height=(int)(gallery_faces[i].bbox.height+gallery_faces[i].bbox.height/2.5);
+    	if(finalface.bbox.x<0)
+    	    finalface.bbox.x=0;	
+    	if(finalface.bbox.y<0)
+    	    finalface.bbox.y=0;
+    	if(finalface.bbox.width>(gallery_data_gray.width-finalface.bbox.x))
+    	    finalface.bbox.width=(gallery_data_gray.width-finalface.bbox.x);
+    	if(finalface.bbox.height>(gallery_data_gray.height-finalface.bbox.y))
+    	    finalface.bbox.height=(gallery_data_gray.height-finalface.bbox.y);
+    	res_faces.push_back(finalface);
     }
     return 0;
 
@@ -309,12 +319,18 @@ float Face_Rec_Compare(float * img1_fea,float * img2_fea)
     face_descriptors2.set_size(128,1);
     for(int i=0; i<128 ;i++)
     {
-	face_descriptors1(i,0)=*(img1_fea+i);
-	face_descriptors2(i,0)=*(img2_fea+i);
+    	face_descriptors1(i,0)=*(img1_fea+i);
+    	face_descriptors2(i,0)=*(img2_fea+i);
     }
     float leng=length(face_descriptors1-face_descriptors2);
-    if(leng>1)
-	leng=1;
+   
+    if(leng>1) {
+        leng=1;
+    }
+    else if(leng < 0){
+        leng=0;
+    }
+
     return (float)(1-leng);	
 }
 

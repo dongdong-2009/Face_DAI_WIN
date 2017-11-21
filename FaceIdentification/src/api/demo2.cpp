@@ -4,7 +4,7 @@
 #include <sstream>
 //#include <conio.h>
 #include <sys/time.h>
-#include <io.h>
+//#include <io.h>
 
 
 #ifdef DUSE_DLIB
