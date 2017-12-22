@@ -57,54 +57,46 @@ int main(int argc, char *argv[])
 	
 
 	cout<<"start extract"<<endl;
+	int retFlag = 0;
+	ga_faces.clear();
+	retFlag = Face_Rec_Detect(0,gallery_src_data_color,gallery_src_data_gray,ga_faces,NULL);
+	if(retFlag !=0){
+		std::cout <<"sFace_Rec_Detect fail"<<endl;
+		return 0;
+	}
 
+    cv::Rect face_rect;
+    face_rect.x = ga_faces[0].bbox.x;
+    face_rect.y = ga_faces[0].bbox.y;
+    face_rect.width = ga_faces[0].bbox.width;
+    face_rect.height = ga_faces[0].bbox.height;
+    cv::Mat face_mat = gallery_src_data_color(face_rect);
+    cv::imshow("1", gallery_src_data_color);
+    //cv::imshow("1-seeta", face_mat);
 
-//	gettimeofday(&start,NULL);
-	Face_Rec_Extract(0,gallery_src_data_color,gallery_src_data_gray,gallery_fea,NULL);
-/*
-    gettimeofday(&end,NULL);
-    diff = 1000000 * (end.tv_sec-start.tv_sec)+ end.tv_usec-start.tv_usec;
-	cout<<"first extract time is :"<<(diff/1000000.0)<<endl;
-
-
-	gettimeofday(&start,NULL);
-*/
-
-	Face_Rec_Extract(0,probe_dst_data_color,probe_dst_data_gray,probe_fea,NULL);
-/*
-    gettimeofday(&end,NULL);
-    
-    diff = 1000000 * (end.tv_sec-start.tv_sec)+ end.tv_usec-start.tv_usec;
-	cout<<"second extract time is :"<<(diff/1000000.0)<<endl;
-*/
-	cout<<"start Detect"<<endl;
+	int res = Face_Rec_Extract(0,face_mat,gallery_src_data_gray,gallery_fea,NULL);
+	cout << "Res1 of Face_Rec_Extract"<<res <<endl;
 
 	ga_faces.clear();
+	retFlag = Face_Rec_Detect(0,probe_dst_data_color,probe_dst_data_gray,ga_faces,NULL);
+	if(retFlag !=0){
+		std::cout <<"sFace_Rec_Detect fail"<<endl;
+		return 0;
+	}
+	
+    cv::Rect face_rect1;
+    face_rect1.x = ga_faces[0].bbox.x;
+    face_rect1.y = ga_faces[0].bbox.y;
+    face_rect1.width = ga_faces[0].bbox.width;
+    face_rect1.height = ga_faces[0].bbox.height;
+    cv::Mat face_mat1 = probe_dst_data_color(face_rect1);
+    cv::imshow("2", probe_dst_data_color);
+    //cv::imshow("2-seeta", face_mat1);
 
-//	gettimeofday(&start,NULL);
-	Face_Rec_Detect(0,gallery_src_data_color,gallery_src_data_gray,ga_faces,NULL);
+	res = Face_Rec_Extract(0,face_mat1,probe_dst_data_gray,probe_fea,NULL);
+	cout << "Res2 of Face_Rec_Extract"<<res <<endl;
 
-/*
-        gettimeofday(&end,NULL);
-  
-        diff = 1000000 * (end.tv_sec-start.tv_sec)+ end.tv_usec-start.tv_usec;
-	cout<<"first Detect time is :"<<(diff/1000000.0)<<endl;
-*/
-	std::cout << "picture 1 detect faces:"<<"face num:"<<ga_faces.size()<< endl;
-	ga_faces.clear();
-
-
-//	gettimeofday(&start,NULL);
-	Face_Rec_Detect(0,probe_dst_data_color,probe_dst_data_gray,ga_faces,NULL);
-
-/*
-        gettimeofday(&end,NULL);
-        diff = 1000000 * (end.tv_sec-start.tv_sec)+ end.tv_usec-start.tv_usec;
-	cout<<"first Detect time is :"<<(diff/1000000.0)<<endl;
-*/
 	std::cout << "picture 2 detect faces:"<<"face num:"<<ga_faces.size()<< endl;
-
-
 
 	//Caculate Sim
 	float sim = Face_Rec_Compare(gallery_fea,probe_fea);
@@ -120,5 +112,7 @@ int main(int argc, char *argv[])
 	gallery_fea=NULL;
 	probe_fea=NULL;	
 	
+	cv::waitKey();
+
 	return 0;
 }

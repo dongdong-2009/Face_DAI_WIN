@@ -27,7 +27,7 @@ using namespace std;
 using namespace cv;
 using namespace seeta;
 
-#define _LIMIT 1
+//#define _LIMIT 1
 
 // ----------------------------------------------------------------------------------------
 
@@ -117,7 +117,7 @@ int Face_Rec_Init(int ChannelNum,char *path)
     if(Seeta_detector==NULL) {
         Seeta_detector=new FaceDetection((char *)detector_path.c_str());
         Seeta_detector->SetMinFaceSize(40);
-        Seeta_detector->SetScoreThresh(2.8f);
+        Seeta_detector->SetScoreThresh(3.8f);
         Seeta_detector->SetImagePyramidScaleFactor(0.8f);
         Seeta_detector->SetWindowStep(4, 4);
     }
@@ -190,16 +190,83 @@ int Face_Rec_Extract(int ChannelID,Mat img_data_color,Mat img_data_gray,float* i
     //pyramid_up(img);
 
     std::vector<matrix<rgb_pixel>> faces;
-    for (auto face : detector(img))
+
+    full_object_detection shape;
+    std::vector<dlib::rectangle> dets = detector(img);
+    
+    if(dets.size() == 0){
+        dlib::rectangle det;
+        det.set_left(0);
+        det.set_top(0);
+        det.set_right(img_data_color.cols);
+        det.set_bottom(img_data_color.rows);
+
+        shape = sp(img, det);
+    }
+    else{
+        shape = sp(img, dets[0]);
+    }
+
+    //start 
     {
-        auto shape = sp(img, face);
+        int min_y = 999999;
+        int max_y = 0;
+        for (int i = 0; i < 68; i++)  
+        {  
+            if(shape.part(i).y()<min_y){
+
+                min_y = shape.part(i).y();
+            }
+            if(shape.part(i).y()>max_y){
+                max_y = shape.part(i).y();
+            }
+        }
+                   
+        if(min_y<0)
+            min_y = 0;
+        if(max_y<0)
+            max_y = 0;
+        if(max_y>img_data_color.rows)
+            max_y = img_data_color.rows;
+
+        cv::Rect Rect_Sub;
+        Rect_Sub.x = 0;
+        if((min_y - 10) >0 )
+            Rect_Sub.y = min_y - 10;
+        else
+            Rect_Sub.y = min_y;
+        Rect_Sub.width = img_data_color.cols;
+        Rect_Sub.height = max_y - Rect_Sub.y;
+        cv::Mat sub_img = img_data_color(Rect_Sub);
+
+
+        matrix<rgb_pixel> img_new;
+        img_new.set_size(sub_img.rows,sub_img.cols);
+        //img_data_color opencv default is BGR
+        for (int n = 0; n < sub_img.rows ;n++ )
+        {
+            for (int m = 0; m < sub_img.cols; m++ )
+            {
+                img_new(n,m).red = (float)sub_img.at<Vec3b>(n,m)[2]; //R
+                img_new(n,m).green = (float)sub_img.at<Vec3b>(n,m)[1];   //G
+                img_new(n,m).blue = (float)sub_img.at<Vec3b>(n,m)[0];    //B
+            }
+        }
+
+        dlib::rectangle det1;
+        det1.set_left(0);
+        det1.set_top(0);
+        det1.set_right(sub_img.cols);
+        det1.set_bottom(sub_img.rows);
+        auto shape_new = sp(img_new, det1);
+
         matrix<rgb_pixel> face_chip;
-        extract_image_chip(img, get_face_chip_details(shape,150,0.25), face_chip);
+        extract_image_chip(img_new, get_face_chip_details(shape_new,150,0.25), face_chip);
         faces.push_back(move(face_chip));
         // Also put some boxes on the faces so we can see that the detector is finding
         // them.
         //win.add_overlay(face);
-        break;
+
     }
 
     if (faces.size()<1) {
