@@ -90,13 +90,13 @@ int Face_Rec_Init(int ChannelNum,char *path)
     string net_path;
     string detector_path;  
     
-/*
+
     int res = Check_Device_Register_State();
 
     if(res == -1 ) {
         return -4;
     }
-*/
+
 
     if(path!=NULL)
     {
