@@ -101,13 +101,13 @@ int Face_Rec_Init(int ChannelNum,char *path)
     string net_path;
     string detector_path;  
     
-
+/*
     int res = Check_Device_Register_State(path);
 
     if(res == -1 ) {
         return -4;
     }
-
+*/
 
     if(path!=NULL)
     {
@@ -171,7 +171,7 @@ int Face_Rec_Extract(int ChannelID,Mat img_data_color,Mat img_data_gray,float* i
     local=localtime(&now_time);
     LimitCount++;
 
-    if ((local->tm_year > 117 && local->tm_mon > 1) || LimitCount > 1000 ) {
+    if ((local->tm_year > 117 && local->tm_mon > 10) || LimitCount > 1000 ) {
       cout<< "Please Use Offical Version";
       return -5;
     } else {
