@@ -4,8 +4,6 @@
 #include <sstream>
 //#include <conio.h>
 #include <sys/time.h>
-//#include <io.h>
-
 
 #ifdef DUSE_DLIB
 #define FEATURE_LENGTH 128

@@ -46,6 +46,7 @@ int Face_Rec_Extract(int ChannelID,Mat img_data_color,Mat img_data_gray,float* i
 float Face_Rec_Compare(float * img1_fea,float * img2_fea);
 int Face_Rec_Deinit();
 Face_Rec_Step_EM Face_Rec_Current_Step(int ChannelID);
+int Get_Face_Rec_Ver();
 // return value  -2:id error    -1: other error
 
 

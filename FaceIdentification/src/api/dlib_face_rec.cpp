@@ -27,6 +27,7 @@ using namespace std;
 using namespace cv;
 using namespace seeta;
 
+#define CURRENT_VER 1
 //#define _LIMIT 1
 
 // ----------------------------------------------------------------------------------------
@@ -78,6 +79,16 @@ bool init_finished=0;
 static FaceDetection *Seeta_detector=NULL;
 static int LimitCount = 0;
 
+static float simd(const float* x, const float* y, const long& len) {
+	float sum = 0;
+
+	for (int i = 0; i < len; i++)
+	{
+		sum += (x[i]-y[i]) *(x[i]-y[i]);
+	}	
+	return std::sqrt(sum);
+}
+
 //Function: Initialize the face detection/recognize module
 //Param : 
 //  ChannelNum: the max of thread
@@ -91,7 +102,7 @@ int Face_Rec_Init(int ChannelNum,char *path)
     string detector_path;  
     
 
-    int res = Check_Device_Register_State();
+    int res = Check_Device_Register_State(path);
 
     if(res == -1 ) {
         return -4;
@@ -380,16 +391,7 @@ int Face_Rec_Detect(int ChannelID,Mat img_data_color,Mat img_data_gray,std::vect
 //  simularity of two faces
 float Face_Rec_Compare(float * img1_fea,float * img2_fea)
 {
-    matrix<float,0,1> face_descriptors1;
-    matrix<float,0,1> face_descriptors2;
-    face_descriptors1.set_size(128,1);	
-    face_descriptors2.set_size(128,1);
-    for(int i=0; i<128 ;i++)
-    {
-    	face_descriptors1(i,0)=*(img1_fea+i);
-    	face_descriptors2(i,0)=*(img2_fea+i);
-    }
-    float leng=length(face_descriptors1-face_descriptors2);
+    float leng=simd(img1_fea,img2_fea,128);
    
     if(leng>1) {
         leng=1;
@@ -418,6 +420,11 @@ int Face_Rec_Deinit()
 Face_Rec_Step_EM Face_Rec_Current_Step(int ChannelID)
 {
     return FACE_REC_STEP_IDLE;
+}
+
+int Get_Face_Rec_Ver()
+{
+    return CURRENT_VER;
 }
 
 // ----------------------------------------------------------------------------------------
